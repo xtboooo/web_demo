@@ -1,5 +1,6 @@
-from django.shortcuts import HttpResponse, render
-from django.http import HttpResponse
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from users import models
 
 
 def register(request):
@@ -18,10 +19,14 @@ def register(request):
     #     </body>
     # </html>
     # """
-    if request.method=='GET':
+    if request.method == 'GET':
         return render(request, 'register.html')
     else:
         username = request.POST.get('username')
         password = request.POST.get('password')
-        print(f'username:{username} password:{password}')
-        return HttpResponse('进行注册业务处理')
+        user = models.User.objects.create(username=username, password=password)
+        # print(f'username:{username} password:{password}')
+        return JsonResponse({'message': '注册成功'})
+
+
+
