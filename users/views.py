@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render, redirect, HttpResponse
+from django.http import JsonResponse
 from users import models
 
 
@@ -26,7 +26,9 @@ def register(request):
         password = request.POST.get('password')
         user = models.User.objects.create(username=username, password=password)
         # print(f'username:{username} password:{password}')
-        return JsonResponse({'message': '注册成功'})
+        return redirect('/login/')
 
 
-
+def login(request):
+    """登陆View视图函数"""
+    return render(request, 'login.html')
