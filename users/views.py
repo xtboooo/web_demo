@@ -22,10 +22,13 @@ def register(request):
     if request.method == 'GET':
         return render(request, 'register.html')
     else:
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        import json
+        req_dict = json.loads(request.body)
+
+        username = req_dict.get('username')
+        password = req_dict.get('password')
         user = models.User.objects.create(username=username, password=password)
-        # print(f'username:{username} password:{password}')
+        print(f'username:{username} password:{password}')
         return redirect('/login/')
 
 
@@ -33,7 +36,7 @@ def login(request):
     """登陆View视图函数"""
     username = request.session.get('username')
     if username:
-        return HttpResponse(f'用户已登陆{username}')
+        return HttpResponse(f'{username}用户已登陆')
 
     if request.method == 'GET':
         return render(request, 'login.html')
@@ -51,3 +54,4 @@ def login(request):
             if remember != 'true':
                 request.session.set_expiry(0)
             return JsonResponse({'message': 'login success'})
+
