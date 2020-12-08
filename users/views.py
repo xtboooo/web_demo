@@ -31,14 +31,23 @@ def register(request):
 
 def login(request):
     """登陆View视图函数"""
+    username = request.session.get('username')
+    if username:
+        return HttpResponse(f'用户已登陆{username}')
+
     if request.method == 'GET':
         return render(request, 'login.html')
     else:
         username = request.POST.get('username')
-        password= request.POST.get('password')
+        password = request.POST.get('password')
+        remember = request.POST.get('remember')
         try:
             user = models.User.objects.get(username=username, password=password)
         except models.User.DoesNotExist:
             return JsonResponse({'message': 'login failed'})
         else:
-            return JsonResponse({'message':'login success'})
+            request.session['user_id'] = user.id
+            request.session['username'] = user.username
+            if remember != 'true':
+                request.session.set_expiry(0)
+            return JsonResponse({'message': 'login success'})
