@@ -55,3 +55,18 @@ def login(request):
                 request.session.set_expiry(0)
             return JsonResponse({'message': 'login success'})
 
+
+def user_info(request, id):
+    """获取指定用户的信息"""
+    try:
+        user = models.User.objects.get(id=id)
+    except models.User.DoesNotExist:
+        return JsonResponse({'message': '用户不存在'})
+    else:
+        res_data = {
+            'id': user.id,
+            'name': user.username,
+            'gender': user.gender,
+            'age': user.age,
+        }
+        return JsonResponse(res_data)
