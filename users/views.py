@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
+from django.views import View
+
 from users import models
 
 
@@ -70,3 +72,26 @@ def user_info(request, id):
             'age': user.age,
         }
         return JsonResponse(res_data)
+
+
+class LoginView(View):
+    def get(self, request):
+        username = request.session.get('username')
+        if username:
+            return HttpResponse(f'{username}用户已登陆')
+        return render(request, 'login.html')
+
+    def post(self, request):
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        remember = request.POST.get('remember')
+        try:
+            user = models.User.objects.get(username=username, password=password)
+        except models.User.DoesNotExist:
+            return JsonResponse({'message': 'login failed'})
+        else:
+            request.session['user_id'] = user.id
+            request.session['username'] = user.username
+            if remember != 'true':
+                request.session.set_expiry(0)
+            return JsonResponse({'message': 'login success'})
